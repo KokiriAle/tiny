@@ -1,10 +1,7 @@
 package compilador;
 package ast;
-package lexer;
 
 import java_cup.runtime.*;
-import compilador.sym;
-import ast.*; 
 
 %%
 
@@ -37,6 +34,8 @@ import ast.*;
 %line
 %column
 
+
+
 digito		= [0-9]
 numero		= [-]?\{digito}+
 letra			= [a-zA-Z]
@@ -44,7 +43,9 @@ identificador	= {letra}+
 nuevalinea		= \n | \n\r | \r\n
 espacio		= [ \t]+
 
+
 %%
+
 
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);
@@ -128,7 +129,7 @@ espacio		= [ \t]+
 			return sf.newSymbol("OVER",sym.OVER);
 			}
 			
-"!="			{ 	if(debug) System.out.println("token DIFFERENT");
+"!="			{ 	if(debug) System.out.println("token DIFERENTE");
 			return sf.newSymbol("DIFERENTE",sym.DIFERENTE);
 			}
 						
@@ -149,7 +150,7 @@ espacio		= [ \t]+
 			return sf.newSymbol("SEMI",sym.SEMI);
 			}
 			
-","             {	if(debug) System.out.println("token COMMA");
+","             {	if(debug) System.out.println("token COMA");
 			return sf.newSymbol("COMA",sym.COMA);
 			}
 {numero}        {	if(debug) System.out.println("token NUM");

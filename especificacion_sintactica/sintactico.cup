@@ -1,7 +1,9 @@
 package compilador;
+package ast;
 
 import java_cup.runtime.*;
 import ast.*;
+import compilador.*;
 
 action code {:
 	private boolean modoDepuracion=false;
@@ -19,46 +21,200 @@ action code {:
 terminal IF;
 terminal THEN;
 terminal ELSE;
+terminal BEGIN;
 terminal END;
 terminal REPEAT;
 terminal UNTIL;
 terminal READ;
 terminal WRITE;
-terminal String ID;
-terminal Integer NUM;
+terminal FOR;
+terminal VOID;
+terminal INT;
+terminal BOOLEAN;
+terminal RETURN;
 terminal ASSIGN;
 terminal EQ;
 terminal LT;
+terminal GT;
+terminal LE;
+terminal GE;
 terminal PLUS;
 terminal MINUS;
 terminal TIMES;
 terminal OVER;
+terminal DIFFERENT;
+terminal AND;
+terminal OR;
 terminal LPAREN;
 terminal RPAREN;
 terminal SEMI;
+terminal COMMA;
+terminal Integer NUM;
+terminal String ID;
+
 
 /* Simbolos No Terminales */
 non terminal program;
+non terminal NodoBase bloque;
+non terminal NodoBase cp;
 non terminal NodoBase stmt_seq;
 non terminal NodoBase stmt;
-non terminal NodoBase if_stmt;
-non terminal NodoBase repeat_stmt;
+non terminal NodoBase stmt_decl;
+non terminal NodoBase tipo;
+non terminal NodoBase list_var;
+non terminal NodoBase var;
+non terminal NodoBase vector;
 non terminal NodoBase assign_stmt;
+non terminal NodoBase term;
+non terminal NodoBase literal;
+non terminal NodoBase bool;
+non terminal NodoBase exp;
+non terminal NodoBase expI;
+non terminal NodoBase expB;
+non terminal NodoBase opI;
+non terminal NodoBase opB;
+non terminal NodoBase call_funct;
+non terminal NodoBase list_parm;
+non terminal NodoBase parm;
+non terminal NodoBase funct_decl;
+non terminal NodoBase bloquef;
+non terminal NodoBase list_def_parm;
+non terminal NodoBase if_stmt;
+non terminal NodoBase if_exp;
+non terminal NodoBase op_comp;
+non terminal NodoBase for_stmt;
 non terminal NodoBase read_stmt;
 non terminal NodoBase write_stmt;
-non terminal NodoBase exp;
+
+
+
+
+
+non terminal NodoBase repeat_stmt;
 non terminal NodoBase simple_exp;
-non terminal NodoBase term;
 non terminal NodoBase factor;
 
 /* Precedencia de operadores */
+precedence left BEGIN;
+precedence left LPAREN, RPAREN;
+precedence left TIMES;
+precedence left OVER;
 precedence left PLUS;
 precedence left MINUS;
-precedence left TIMES;
 
 
 /* REGLAS GRAMATICALES */
-program     ::= stmt_seq:s	{: if(modoDepuracion) System.out.println("\t regla 1"); 
+program     ::= bloque:s        {: if(modoDepuracion) System.out.println("\t regla 0"); 
+					ast = s;
+					:};
+
+bloque      ::= funct_decl:ini cp:cuerpo {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+						NodoBase hijoActual = ini;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(cuerpo);
+							RESULT=ini;
+						}else{
+							RESULT=cuerpo;
+						}
+						:}
+            |cp:cuerpo	{: if(modoDepuracion) System.out.println("\t regla 2a"); 
+				RESULT=cuerpo;				
+				:};
+
+cp   ::= BEGIN stmt_seq:sent END {: if(modoDepuracion) System.out.println("\t regla 2"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						}
+						
+			:};
+
+stmt_seq ::= stmt_seq:ini stmt:sent {: if(modoDepuracion) System.out.println("\t regla 3a"); 
+						NodoBase hijoActual = ini;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=ini;
+						}else{
+							RESULT=sent;
+						}
+						:}
+            | stmt:sent	{: if(modoDepuracion) System.out.println("\t regla 3b"); 
+				RESULT=sent;				
+				:}
+		;
+		
+stmt ::= stmt_decl:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						} 
+  		:} ;
+       | assign_stmt:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						} 
+  		:} ;
+	   
+	   | call_funct:sent SEMI  {: if(modoDepuracion) System.out.println("\t regla 4"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						} 
+  		:} ;
+		
+         | funct_decl:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						} 
+  		:} ; 
+         | if_stmt:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+					NodoBase hijoActual = sent;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(sent);
+							RESULT=sent;
+						} 
+  		:} ;
+ 
+
+		 | for_stmt:sent | write_stmt:sent SEMI | read_stmt:sent SEMI		
+		
+/****************************************Hasta Aqui hoy 11/04*****************************/		
+		
+		
+		
+		
+/*program     ::= stmt_seq:s	{: if(modoDepuracion) System.out.println("\t regla 1"); 
 					ast = s;
 					:}
 		;
@@ -203,3 +359,4 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 				RESULT=null;
 				:}
 		;
+*/
