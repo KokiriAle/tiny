@@ -47,6 +47,8 @@ terminal AND;
 terminal OR;
 terminal LPAREN;
 terminal RPAREN;
+terminal LCLASP;
+terminal RCLASP;
 terminal SEMI;
 terminal COMMA;
 terminal Integer NUM;

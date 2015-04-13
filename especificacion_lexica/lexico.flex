@@ -139,12 +139,23 @@ espacio		= [ \t]+
 "or"        	{ if(debug) System.out.println("token OR");
 			return sf.newSymbol("OR",sym.OR);
 			}
+
 "("             {	if(debug) System.out.println("token LPAREN");
 			return sf.newSymbol("LPAREN",sym.LPAREN);
 			}
+
 ")"             {	if(debug) System.out.println("token RPAREN");
 			return sf.newSymbol("RPAREN",sym.RPAREN);
 			}
+
+"["             {	if(debug) System.out.println("token LCLASP");
+			return sf.newSymbol("LCLASP",sym.LCLASP);
+			}
+
+"]"             {	if(debug) System.out.println("token RCLASP");
+			return sf.newSymbol("RCLASP",sym.RCLASP);
+			}
+
 ";"             {	if(debug) System.out.println("token SEMI");
 			return sf.newSymbol("SEMI",sym.SEMI);
 			}
