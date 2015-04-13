@@ -51,6 +51,7 @@ terminal LCLASP;
 terminal RCLASP;
 terminal SEMI;
 terminal COMMA;
+terminal EMPTY;
 terminal Integer NUM;
 terminal String ID;
 

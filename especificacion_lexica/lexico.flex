@@ -161,8 +161,13 @@ espacio		= [ \t]+
 			}
 			
 ","             {	if(debug) System.out.println("token COMMA");
-			return sf.newSymbol("COMA",sym.COMA);
+			return sf.newSymbol("COMMA",sym.COMMA);
 			}
+
+""             {	if(debug) System.out.println("token EMPTY");
+			return sf.newSymbol("EMPTY",sym.EMPTY);
+			}
+
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new Integer(yytext()));
 			}

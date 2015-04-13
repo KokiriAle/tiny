@@ -1,0 +1,32 @@
+program 	-> block
+block		-> decl_functs mainbody | mainbody
+mainbody 	-> BEGIN stmt_seq END
+stmt_seq	-> stmt_seq stmt | stmt
+stmt 		-> decl_stmt SEMI | assing_stmt SEMI | call_funct SEMI | if_stmt | for_stmt | return_stmt SEMI |write SEMI | read SEMI
+decl_stmt 	-> type var_list | type assign_stmt | type array
+type 		-> INT | BOOLEAN | VOID
+var_list	-> var_list COMMA var | var
+var 		-> ID | array
+array 		-> ID LCLASP exp RCLASP
+assign_stmt	-> var EQ term | var EQ exp
+term		-> var | val
+val 		-> DIGITO | bool
+bool 		-> TRUE | FALSE
+exp 		-> expI | expB | LPAREN exp RPAREN
+expI 		-> expI opI expI | DIGITO | ID | call_funct
+expB 		-> expB opB expB | bool | ID | call_funct
+opI 		-> PLUS | MINUS | TIMES | OVER
+opB 		-> AND | OR
+call_funct 	-> ID LPAREN param_list RPAREN
+param_list 	-> param_list COMMA param | param | EMPTY
+param 		-> val | ID | exp
+decl_funct  -> type ID LPAREN defpar_list RPAREN mainbody
+decl_functs -> decl_functs decl_funct
+defpar_list -> defpar_list COMMA type param | type param
+if_stmt 	-> IF LPAREN if_exp RPAREN THEN stmt_seq END | IF LPAREN if_exp RPAREN THEN stmt_seq ELSE stmt_seq END
+if_exp 		-> comp_exp | expB
+comp_exp 	-> exp I opC expI
+opC 		-> GT | LT | GE | LE | DIFFERENT
+for_stmt 	-> FOR LPAREN assign_stmt SEMI comp_exp SEMI assign_stmt RPAREN stmt_seq END
+write 		-> WRITE var
+read 		-> READ var
