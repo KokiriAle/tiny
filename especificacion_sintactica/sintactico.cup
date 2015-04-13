@@ -58,18 +58,18 @@ terminal String ID;
 
 /* Simbolos No Terminales */
 non terminal program;
-non terminal NodoBase bloque;
-non terminal NodoBase cp;
+non terminal NodoBase block;
+non terminal NodoBase mainbody;
 non terminal NodoBase stmt_seq;
 non terminal NodoBase stmt;
-non terminal NodoBase stmt_decl;
+non terminal NodoBase decl_stmt;
 non terminal NodoBase tipo;
-non terminal NodoBase list_var;
+non terminal NodoBase var_list;
 non terminal NodoBase var;
-non terminal NodoBase vector;
+non terminal NodoBase array;
 non terminal NodoBase assign_stmt;
 non terminal NodoBase term;
-non terminal NodoBase literal;
+non terminal NodoBase val;
 non terminal NodoBase bool;
 non terminal NodoBase exp;
 non terminal NodoBase expI;
@@ -77,11 +77,11 @@ non terminal NodoBase expB;
 non terminal NodoBase opI;
 non terminal NodoBase opB;
 non terminal NodoBase call_funct;
-non terminal NodoBase list_parm;
-non terminal NodoBase parm;
-non terminal NodoBase funct_decl;
-non terminal NodoBase bloquef;
-non terminal NodoBase list_def_parm;
+non terminal NodoBase param_list;
+non terminal NodoBase param;
+non terminal NodoBase decl_funct;
+non terminal NodoBase decl_functs;
+non terminal NodoBase defpar_list;
 non terminal NodoBase if_stmt;
 non terminal NodoBase if_exp;
 non terminal NodoBase op_comp;
@@ -107,11 +107,11 @@ precedence left MINUS;
 
 
 /* REGLAS GRAMATICALES */
-program     ::= bloque:s        {: if(modoDepuracion) System.out.println("\t regla 0"); 
+program     ::= block:s        {: if(modoDepuracion) System.out.println("\t regla 0"); 
 					ast = s;
 					:};
 
-bloque      ::= funct_decl:ini cp:cuerpo {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+block      ::= decl_funct:ini mainbody:cuerpo {: if(modoDepuracion) System.out.println("\t regla 2a"); 
 						NodoBase hijoActual = ini;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
@@ -123,11 +123,11 @@ bloque      ::= funct_decl:ini cp:cuerpo {: if(modoDepuracion) System.out.printl
 							RESULT=cuerpo;
 						}
 						:}
-            |cp:cuerpo	{: if(modoDepuracion) System.out.println("\t regla 2a"); 
+            |mainbody:cuerpo	{: if(modoDepuracion) System.out.println("\t regla 2a"); 
 				RESULT=cuerpo;				
 				:};
 
-cp   ::= BEGIN stmt_seq:sent END {: if(modoDepuracion) System.out.println("\t regla 2"); 
+mainbody   ::= BEGIN stmt_seq:sent END {: if(modoDepuracion) System.out.println("\t regla 2"); 
 					NodoBase hijoActual = sent;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
@@ -156,7 +156,7 @@ stmt_seq ::= stmt_seq:ini stmt:sent {: if(modoDepuracion) System.out.println("\t
 				:}
 		;
 		
-stmt ::= stmt_decl:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+stmt ::= decl_stmt:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
 					NodoBase hijoActual = sent;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
@@ -188,7 +188,7 @@ stmt ::= stmt_decl:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 
 						} 
   		:} ;
 		
-         | funct_decl:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
+         | decl_funct:sent SEMI {: if(modoDepuracion) System.out.println("\t regla 4"); 
 					NodoBase hijoActual = sent;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
