@@ -52,6 +52,7 @@ terminal RCLASP;
 terminal SEMI;
 terminal COMMA;
 terminal EMPTY;
+terminal ERROR;
 terminal Integer NUM;
 terminal String ID;
 
@@ -62,44 +63,34 @@ non terminal NodoBase block;
 non terminal NodoBase mainbody;
 non terminal NodoBase stmt_seq;
 non terminal NodoBase stmt;
-non terminal NodoBase decl_stmt;
-non terminal NodoBase tipo;
-non terminal NodoBase var_list;
-non terminal NodoBase var;
-non terminal NodoBase array;
+non terminal NodoBase if_stmt;
+non terminal NodoBase repeat_stmt;
 non terminal NodoBase assign_stmt;
-non terminal NodoBase term;
-non terminal NodoBase val;
-non terminal NodoBase bool;
 non terminal NodoBase exp;
-non terminal NodoBase expI;
-non terminal NodoBase expB;
-non terminal NodoBase opI;
-non terminal NodoBase opB;
+non terminal NodoBase simple_exp;
+non terminal NodoBase term;
+non terminal NodoBase factor;
+non terminal NodoBase vector;
+non terminal NodoBase decl_stmt;
+non terminal NodoBase type;
+non terminal NodoBase var_list;
 non terminal NodoBase call_funct;
 non terminal NodoBase param_list;
 non terminal NodoBase param;
 non terminal NodoBase decl_funct;
 non terminal NodoBase decl_functs;
 non terminal NodoBase defpar_list;
-non terminal NodoBase if_stmt;
-non terminal NodoBase if_exp;
-non terminal NodoBase op_comp;
-non terminal NodoBase for_stmt;
-non terminal NodoBase read_stmt;
+non terminal NodoBase return_stmt;
 non terminal NodoBase write_stmt;
+non terminal NodoBase write_stmt;
+non terminal NodoBase for_stmt;
 
 
-
-
-
-non terminal NodoBase repeat_stmt;
-non terminal NodoBase simple_exp;
-non terminal NodoBase factor;
 
 /* Precedencia de operadores */
 precedence left BEGIN;
 precedence left LPAREN, RPAREN;
+precedence left LCLAPS, RCLAPS;
 precedence left TIMES;
 precedence left OVER;
 precedence left PLUS;
@@ -111,7 +102,7 @@ program     ::= block:s        {: if(modoDepuracion) System.out.println("\t regl
 					ast = s;
 					:};
 
-block      ::= decl_funct:ini mainbody:cuerpo {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+block      ::= decl_functs:ini mainbody:cuerpo {: if(modoDepuracion) System.out.println("\t regla 2a"); 
 						NodoBase hijoActual = ini;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
