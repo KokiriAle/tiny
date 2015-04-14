@@ -357,6 +357,23 @@ type        ::= INT {: if(modoDepuracion) System.out.println("\t regla 8a");
                 		:};
 
 
+/*defpar_list -> defpar_list COMMA type param | type param | EMPTY*/
+
+defpar_list	::= defpar_list:lista COMMA type:tipo param:par  
+
+/*return_stmt -> RETURN exp*/
+
+return_stmt	::= RETURN exp:ex	{: if(modoDepuracion) System.out.println("\t regla 4"); 
+						NodoBase hijoActual = ex;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(ex);
+							RESULT=ex;
+						}
+						:}
+		;
 read_stmt   ::= READ ID:variable	{: if(modoDepuracion) System.out.println("\t regla 7"); 
 					System.out.println("Leyendo Variable");
 					if(variable!=null)
@@ -372,3 +389,6 @@ write_stmt  ::= WRITE exp:ex	{: if(modoDepuracion) System.out.println("\t regla 
 					RESULT= new NodoEscribir(ex);
 					:}
 		;
+
+/*for_stmt 	-> FOR LPAREN assign_stmt SEMI exp SEMI assign_stmt RPAREN stmt_seq END*/
+
