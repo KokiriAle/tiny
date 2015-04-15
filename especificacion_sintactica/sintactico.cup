@@ -52,7 +52,6 @@ terminal RCLASP;
 terminal SEMI;
 terminal COMMA;
 terminal EMPTY;
-terminal ERROR;
 terminal Integer NUM;
 terminal String ID;
 
@@ -84,10 +83,11 @@ non terminal NodoBase return_stmt;
 non terminal NodoBase write_stmt;
 non terminal NodoBase read_stmt;
 non terminal NodoBase for_stmt;
+non terminal NodoBase error;
 
 
 
-/* Precedencia de operadores */
+/* Precedencia de operadores 
 precedence left BEGIN;
 precedence left LPAREN, RPAREN;
 precedence left LCLAPS, RCLAPS;
@@ -95,7 +95,7 @@ precedence left TIMES;
 precedence left OVER;
 precedence left PLUS;
 precedence left MINUS;
-
+*/
 
 /* REGLAS GRAMATICALES */
 
@@ -119,7 +119,7 @@ block       ::= decl_functs:declararfun mainbody:cuerpo {: if(modoDepuracion) Sy
 							RESULT=cuerpo;
 						} :}
             | mainbody:cuerpo	{: if(modoDepuracion) System.out.println("\t regla 2b"); 
-				RESULT=sent;
+				RESULT=cuerpo;
 				:};
 				
 /*mainbody 	-> BEGIN stmt_seq END*/
@@ -152,7 +152,7 @@ stmt_seq    ::= stmt_seq:ini stmt:sent	{: if(modoDepuracion) System.out.println(
 				RESULT=sent;				
 				:};
 				
-/*stmt 		-> if_stmt | repeat_stmt SEMI | assign_stmt SEMI | decl_stmt SEMI| call_funct SEMI | return_stmt SEMI| write_stmt SEMI | read_stmt SEMI| for_stmt | ERROR*/
+/*stmt 		-> if_stmt | repeat_stmt SEMI | assign_stmt SEMI | decl_stmt SEMI| call_funct SEMI | return_stmt SEMI| write_stmt SEMI | read_stmt SEMI| for_stmt | error*/
 
 stmt        ::= if_stmt:sif	{: if(modoDepuracion) System.out.println("\t regla 3a"); 
 					RESULT=sif;
@@ -265,7 +265,7 @@ term        ::= term:exI TIMES factor:exD	{: if(modoDepuracion) System.out.print
 					RESULT=ex;
 					:};
 
-/*factor 		-> LPAREN exp RPAREN | NUM | ID | vector | ERROR*/
+/*factor 		-> LPAREN exp RPAREN | NUM | ID | vector | error*/
 
 factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\t regla 12a"); 
 							RESULT = ex;
@@ -289,14 +289,9 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 					}
 					:}
 		| vector:vec  {: if(modoDepuracion) System.out.println("\t regla 2a"); 
-						NodoBase hijoActual = vec;
-						if(hijoActual !=null){
-							while(hijoActual.TieneHermano()){
-								hijoActual = hijoActual.getHermanoDerecha();
-							}
-							hijoActual.setHermanoDerecha(sent);
-							RESULT=vec;
-							 :}   /*OJO Probando-Preguntar*/		
+						RESULT=vec;
+					  :} 	
+					  	
 		| error	{: if(modoDepuracion) System.out.println("\t regla 12d"); 
 				System.out.println("Ocurrio error en cup # 0003");
 				RESULT=null;
@@ -307,10 +302,104 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 vector      ::= ID:identifi LCLASP exp:interno RCLASP {: if(modoDepuracion) System.out.println("\t regla 4a"); 
 		RESULT = new NodoVector(identifi,interno);
 				:};
+				
+/*var_list	-> var_list COMMA factor | factor*/
+
+var_list	::= var_list:lista COMMA factor:fac {: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				new NodoLVar(lista,fac);
+				:};
+		| factor:fac {: if(modoDepuracion) System.out.println("\t regla 11c"); 
+					RESULT=fac;
+					:};
+				
+				
+/*call_funct 	-> ID LPAREN param_list RPAREN*/
+
+call_funct 	::= ID.ident LPAREN param_list.lista RPAREN {: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				new NodoCall(ident,lista);
+				:};
+				
+/*param_list 	-> param_list COMMA param | param | EMPTY*/
+
+param_list 	::= param_list:lista COMMA param:par {:if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoLPar(lista,par);
+				:}
+
+		| param:par	{: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT=par;
+				:};
+		| EMPTY
+				
+/*param 		-> NUM | bool | exp*/
+
+param 		::= NUM:valor	{: if(modoDepuracion) System.out.println("\t regla 12b"); 
+					System.out.println("Devolvi nodo numero entero");
+					if(valor!=null){
+						RESULT= new NodoValor(valor);					
+					}else{
+						RESULT = null;
+						System.out.println("Ocurrio error en cup # 0005");
+					}
+					:}
+		| bool:val {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT=val;
+				:}
+		| exp:ex	{: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT=ex;
+				:};
+				
+/*bool -> TRUE | FALSE*/
+
+bool 		::= TRUE {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoBool("TRUE");
+				:}
+		| FALSE {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoBool("FALSE");
+				:}
+
+				
+/*decl_funct  -> type ID LPAREN defpar_list RPAREN mainbody*/
+
+decl_funct	::= type:tipo ID:ident LPAREN defpar_list:lista RPAREN mainbody:cuerpo {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoDecFun(tipo,ident,lista,cuerpo);
+				:}
+
+
+/*decl_functs -> decl_functs decl_funct | decl_funct | EMPTY/*
+
+decl_functs	::= decl_functs:dfuns decl_funct:dfun  {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+						NodoBase hijoActual = dfuns;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(dfuns);
+							RESULT=dfuns;
+						}else{
+							RESULT=dfun;
+						} :}
+
+		| decl_funct:dfun	{: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT=dfun;
+				:};
+		| EMPTY {: if(modoDepuracion) System.out.println("\t regla 4a"); 
+				RESULT = null;
+				:};
 
 /*defpar_list -> defpar_list COMMA type param | type param | EMPTY*/
 
-defpar_list	::= defpar_list:lista COMMA type:tipo param:par  
+defpar_list	::= defpar_list:lista COMMA type:tipo ID:ident  {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoLDefPar(lista,tipo,ident);
+				:}
+
+		| type:tipo ID:ident	{: if(modoDepuracion) System.out.println("\t regla 4b");
+				RESULT = new NodoType(tipo,ident);
+				:}
+		| EMPTY {: if(modoDepuracion) System.out.println("\t regla 4a"); 
+				RESULT = null;
+				:};
+
+;
 
 /*return_stmt -> RETURN exp*/
 
@@ -341,5 +430,8 @@ write_stmt  ::= WRITE exp:ex	{: if(modoDepuracion) System.out.println("\t regla 
 					:}
 		;
 
-/*for_stmt 	-> FOR LPAREN assign_stmt SEMI exp SEMI assign_stmt RPAREN stmt_seq END*/
+/*for_stmt 	-> FOR LPAREN stmt SEMI exp SEMI stmt RPAREN stmt_seq END*/
 
+for_stmt 	::= FOR LPAREN stmt:st1 SEMI exp:ex SEMI stmt:st2 RPAREN stmt_seq:lista END {: if(modoDepuracion) System.out.println("\t regla 4b"); 
+				RESULT = new NodoFor(st1,ex,st2,lista);
+				:}
