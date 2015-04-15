@@ -399,10 +399,10 @@ param 		::= NUM:valor	{: if(modoDepuracion) System.out.println("\t regla 12b");
 /*bool -> TRUE | FALSE*/
 
 bool 		::= TRUE {: if(modoDepuracion) System.out.println("\t regla 4b"); 
-				RESULT = new NodoBool("TRUE");
+				RESULT = new NodoBool(true);
 				:}
 		| FALSE {: if(modoDepuracion) System.out.println("\t regla 4b"); 
-				RESULT = new NodoBool("FALSE");
+				RESULT = new NodoBool(false);
 				:}
 
 				
