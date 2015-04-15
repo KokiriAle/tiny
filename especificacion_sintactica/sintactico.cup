@@ -113,7 +113,7 @@ block       ::= decl_functs:declararfun mainbody:cuerpo {: if(modoDepuracion) Sy
 							while(hijoActual.TieneHermano()){
 								hijoActual = hijoActual.getHermanoDerecha();
 							}
-							hijoActual.setHermanoDerecha(sent);
+							hijoActual.setHermanoDerecha(declararfun);
 							RESULT=declararfun;
 						}else{
 							RESULT=cuerpo;
@@ -130,7 +130,7 @@ mainbody    ::= BEGIN stmt_seq:sent_sec END  {: if(modoDepuracion) System.out.pr
 							while(hijoActual.TieneHermano()){
 								hijoActual = hijoActual.getHermanoDerecha();
 							}
-							hijoActual.setHermanoDerecha(sent);
+							hijoActual.setHermanoDerecha(sent_sec);
 							RESULT=sent_sec;
 						} :};
 						
@@ -142,7 +142,7 @@ stmt_seq    ::= stmt_seq:ini stmt:sent	{: if(modoDepuracion) System.out.println(
 							while(hijoActual.TieneHermano()){
 								hijoActual = hijoActual.getHermanoDerecha();
 							}
-							hijoActual.setHermanoDerecha(sent);
+							hijoActual.setHermanoDerecha(ini);
 							RESULT=ini;
 						}else{
 							RESULT=sent;
@@ -304,7 +304,9 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 
 /*vector 		-> ID LCLASP exp RCLASP*/
 
-vector      ::= ID:var LCLASP exp:expresion RCLASP 
+vector      ::= ID:identifi LCLASP exp:interno RCLASP {: if(modoDepuracion) System.out.println("\t regla 4a"); 
+		RESULT = new NodoVector(identifi,interno);
+				:};
 
 /*defpar_list -> defpar_list COMMA type param | type param | EMPTY*/
 
