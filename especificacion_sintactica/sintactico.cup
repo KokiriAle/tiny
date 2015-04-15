@@ -302,7 +302,55 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 vector      ::= ID:identifi LCLASP exp:interno RCLASP {: if(modoDepuracion) System.out.println("\t regla 4a"); 
 		RESULT = new NodoVector(identifi,interno);
 				:};
+
+/*decl_stmt 	-> type var_list | type assign_stmt | type vector*/
+
+decl_stmt   ::= type:tipo var_list:lista_var {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+						NodoBase hijoActual = tipo;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(tipo);
+							RESULT=tipo;
+						}else{
+							RESULT=lista_var;
+						} :}
+		| type:tipo assign_stmt:sent_asig {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+						NodoBase hijoActual = tipo;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha(tipo);
+							}
+							hijoActual = hijoActual.setHermanoDerecha(tipo);
+							RESULT=tipo;
+						}else{
+							RESULT=sent_asig;
+						} :}
+		| type:tipo vector:vec {: if(modoDepuracion) System.out.println("\t regla 2a"); 
+						NodoBase hijoActual = tipo;
+						if(hijoActual !=null){
+							while(hijoActual.TieneHermano()){
+								hijoActual = hijoActual.getHermanoDerecha();
+							}
+							hijoActual.setHermanoDerecha(tipo);
+							RESULT=tipo;
+						}else{
+							RESULT=vec;
+						} :};	
 				
+/*type 		-> INT | BOOLEAN | VOID*/
+
+type 		::= INT {: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT= new NodoType("INTEGER");
+				:};
+		| BOOLEAN {: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT= new NodoType("BOOLEAN");
+				:};
+		| VOID {: if(modoDepuracion) System.out.println("\t regla 2b"); 
+				RESULT= new NodoType("VOID");
+				:};
+
 /*var_list	-> var_list COMMA factor | factor*/
 
 var_list	::= var_list:lista COMMA factor:fac {: if(modoDepuracion) System.out.println("\t regla 2b"); 
@@ -316,7 +364,7 @@ var_list	::= var_list:lista COMMA factor:fac {: if(modoDepuracion) System.out.pr
 /*call_funct 	-> ID LPAREN param_list RPAREN*/
 
 call_funct 	::= ID.ident LPAREN param_list.lista RPAREN {: if(modoDepuracion) System.out.println("\t regla 2b"); 
-				new NodoCall(ident,lista);
+				RESULT= new NodoCall(ident,lista);
 				:};
 				
 /*param_list 	-> param_list COMMA param | param | EMPTY*/
