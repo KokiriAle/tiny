@@ -22,7 +22,7 @@ public class NodoCall extends NodoBase {
 		this.lista_parm = lista_parm;
 	}
 
-	public String getLPlista_parm() {
+	public NodoBase getLPlista_parm() {
 		return lista_parm;
 	}
 

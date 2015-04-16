@@ -2,10 +2,9 @@ package compilador;
 
 import java_cup.runtime.*;
 import ast.*;
-import compilador.*;
 
 action code {:
-	private boolean modoDepuracion=true;
+	private boolean modoDepuracion=false;
 	private NodoBase ast=null;
 	private int lineanum=0;
 	
@@ -14,6 +13,8 @@ action code {:
 		return ast;
 	}
 :}
+
+/* Simbolos Terminales */
 
 /* Simbolos Terminales */
 
@@ -54,7 +55,6 @@ terminal EMPTY;
 terminal Integer NUM;
 terminal String ID;
 
-
 /* Simbolos No Terminales */
 non terminal program;
 non terminal NodoBase block;
@@ -66,6 +66,10 @@ non terminal NodoBase repeat_stmt;
 non terminal NodoBase assign_stmt;
 non terminal NodoBase exp;
 non terminal NodoBase simple_exp;
+non terminal NodoBase simple_exp1;
+non terminal NodoBase simple_exp2;
+non terminal NodoBase simple_exp3;
+non terminal NodoBase simple_exp4;
 non terminal NodoBase term;
 non terminal NodoBase factor;
 non terminal NodoBase vector;
@@ -84,26 +88,22 @@ non terminal NodoBase read_stmt;
 non terminal NodoBase for_stmt;
 non terminal NodoBase bool;
 
-
-/* Precedencia de operadores 
-precedence left BEGIN;
-precedence left LPAREN, RPAREN;
-precedence left LCLAPS, RCLAPS;
-precedence left TIMES;
-precedence left OVER;
+/* Precedencia de operadores */
 precedence left PLUS;
 precedence left MINUS;
-*/
+precedence left TIMES;
+
 
 /* REGLAS GRAMATICALES */
+/*program 	-> block*/	
 
 program     ::= stmt_seq:s	{: if(modoDepuracion) System.out.println("\t regla 1"); 
 					ast = s;
 					:};
-					
+
 block       ::= decl_functs:declararfun mainbody:cuerpo {: :}
             | mainbody:cuerpo	{:	:};
-            
+
 decl_functs ::= decl_functs:declara decl_funct:dfunc {: :}
 			| EMPTY {: :};
 			
@@ -112,8 +112,8 @@ decl_funct  ::= type:tipo ID:ident LPAREN defpar_list:lista RPAREN mainbody:cuer
 defpar_list ::= defpar_list:listp COMMA type:tipo ID:ident {: :}
 			| type:tipo ID:ident {: :}
 			|EMPTY {: :};
-			
-mainbody    ::= BEGIN stmt_seq:secu END  {: :};	
+					
+mainbody    ::= BEGIN stmt_seq:secu END  {: :};		
 
 stmt_seq    ::= stmt_seq:ini SEMI stmt:sent	{: if(modoDepuracion) System.out.println("\t regla 2a"); 
 						NodoBase hijoActual = ini;
@@ -196,27 +196,28 @@ read_stmt   ::= READ ID:variable	{: if(modoDepuracion) System.out.println("\t re
 write_stmt  ::= WRITE exp:ex	{: if(modoDepuracion) System.out.println("\t regla 8"); 
 					RESULT= new NodoEscribir(ex);
 					:};
-
+					
 decl_stmt   ::= type:tipo var_list:lista {: :}
 			| type:tipo assign_stmt:astmt {: :}
 			| type:tipo vector:vec {: :};
-			
+
 type 		::= INT {: :}
 			| BOOLEAN {: :}
-			| VOID {: :};
-			
+			| VOID {: :};					
+
 var_list    ::= var_list:lista COMMA factor {: :}
 			| factor {: :};
 			
-call_funct  ::=ID:ident LPAREN param_list:plist RPAREN{: :};
+call_funct  ::=ID:ident LPAREN param_list:plist RPAREN{: :};					
 
 param_list  ::= param_list:lista COMMA param:parametro {: :}
 			| param:parametro {: :}
-			| EMPTY {: :};
-			
+			| EMPTY {: :};					
+					
 param       ::= bool:booleano {: :}
 			| exp:expres {: :};
 			
+
 exp         ::= simple_exp:exI LT simple_exp:exD	{: if(modoDepuracion) System.out.println("\t regla 9a"); 
 								RESULT = new NodoOperacion(exI,tipoOp.menor,exD);
 								:} 
@@ -226,7 +227,7 @@ exp         ::= simple_exp:exI LT simple_exp:exD	{: if(modoDepuracion) System.ou
 		| simple_exp:ex	{: if(modoDepuracion) System.out.println("\t regla 9c"); 
 					RESULT = ex;
 					:};
-
+	
 simple_exp  ::= simple_exp:exI PLUS term:exD	{: if(modoDepuracion) System.out.println("\t regla 10a"); 
 							RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
 							:}
@@ -272,7 +273,8 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 				System.out.println("Ocurrio error en cup # 0003");
 				RESULT=null;
 				:};
-
+				
 return_stmt  ::= RETURN exp:expres {: :};
 
 for_stmt     ::= FOR LPAREN assign_stmt:asig SEMI exp:express SEMI assign_stmt:asigna RPAREN stmt_seq:sent END {: :};
+

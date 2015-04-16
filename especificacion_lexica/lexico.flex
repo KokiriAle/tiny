@@ -13,7 +13,6 @@ import ast.*;
 %cup
 /* Llamar Scanner a la clase que contiene el analizador Lexico */
 %class Scanner
-%implements sym
 
 /*-- CONSTRUCTOR --*/
 %{
@@ -38,14 +37,12 @@ import ast.*;
 %column
 
 digito		= [0-9]
-numero		= [-]?\{digito}+
+numero		= {digito}+
 letra			= [a-zA-Z]
 identificador	= {letra}+
 nuevalinea		= \n | \n\r | \r\n
 espacio		= [ \t]+
-
 %%
-
 "if"            {	if(debug) System.out.println("token IF");
 			return sf.newSymbol("IF",sym.IF);
 			}
@@ -55,9 +52,9 @@ espacio		= [ \t]+
 "else"          {	if(debug) System.out.println("token ELSE");
 			return sf.newSymbol("ELSE",sym.ELSE);
 			}
-"begin"           {	if(debug) System.out.println("token BEGIN");
+"begin"			{	if(debug) System.out.println("token BEGIN");
 			return sf.newSymbol("BEGIN",sym.BEGIN);
-			}			
+			}
 "end"           {	if(debug) System.out.println("token END");
 			return sf.newSymbol("END",sym.END);
 			}
@@ -73,15 +70,12 @@ espacio		= [ \t]+
 "write"         {	if(debug) System.out.println("token WRITE");
 			return sf.newSymbol("WRITE",sym.WRITE);
 			}
-			
-"for"       {	if(debug) System.out.println("token FOR");
+"for"       	{	if(debug) System.out.println("token FOR");
 			return sf.newSymbol("FOR",sym.FOR);
 			}
-			
 "void"       {	if(debug) System.out.println("token VOID");
 			return sf.newSymbol("VOID",sym.VOID);
 			}
-			
 "int"       {	if(debug) System.out.println("token INT");
 			return sf.newSymbol("INT",sym.INT);
 			}
@@ -102,19 +96,18 @@ espacio		= [ \t]+
 "<"             {	if(debug) System.out.println("token LT");
 			return sf.newSymbol("LT",sym.LT);
 			}
-			
 ">"             {	if(debug) System.out.println("token GT");
 			return sf.newSymbol("GT",sym.GT);
 			}
-			
 "<="             {	if(debug) System.out.println("token LE");
 			return sf.newSymbol("LE",sym.LE);
 			}
-			
 ">="             {	if(debug) System.out.println("token GE");
 			return sf.newSymbol("GE",sym.GE);
 			}
-			
+"!="			{ 	if(debug) System.out.println("token DIFFERENT");
+			return sf.newSymbol("DIFERENTE",sym.DIFERENTE);
+			}
 "+"             {	if(debug) System.out.println("token PLUS");
 			return sf.newSymbol("PLUS",sym.PLUS);
 			}
@@ -127,47 +120,30 @@ espacio		= [ \t]+
 "/"             {	if(debug) System.out.println("token OVER");
 			return sf.newSymbol("OVER",sym.OVER);
 			}
-			
-"!="			{ 	if(debug) System.out.println("token DIFFERENT");
-			return sf.newSymbol("DIFERENTE",sym.DIFERENTE);
-			}
-						
 "and"       	{ if(debug) System.out.println("token AND");
 			return sf.newSymbol("AND",sym.AND);
 			}
-			
 "or"        	{ if(debug) System.out.println("token OR");
 			return sf.newSymbol("OR",sym.OR);
 			}
-
 "("             {	if(debug) System.out.println("token LPAREN");
 			return sf.newSymbol("LPAREN",sym.LPAREN);
 			}
-
 ")"             {	if(debug) System.out.println("token RPAREN");
 			return sf.newSymbol("RPAREN",sym.RPAREN);
 			}
-
 "["             {	if(debug) System.out.println("token LCLASP");
 			return sf.newSymbol("LCLASP",sym.LCLASP);
 			}
-
 "]"             {	if(debug) System.out.println("token RCLASP");
 			return sf.newSymbol("RCLASP",sym.RCLASP);
 			}
-
 ";"             {	if(debug) System.out.println("token SEMI");
 			return sf.newSymbol("SEMI",sym.SEMI);
 			}
-			
 ","             {	if(debug) System.out.println("token COMMA");
 			return sf.newSymbol("COMMA",sym.COMMA);
 			}
-
-""             {	if(debug) System.out.println("token EMPTY");
-			return sf.newSymbol("EMPTY",sym.EMPTY);
-			}
-
 {numero}        {	if(debug) System.out.println("token NUM");
 			return sf.newSymbol("NUM",sym.NUM,new Integer(yytext()));
 			}

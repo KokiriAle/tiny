@@ -1,0 +1,40 @@
+program 	-> block
+block		-> decl_functs mainbody | mainbody
+mainbody 	-> BEGIN stmt_seq END
+stmt_seq	-> stmt_seq stmt | stmt
+stmt 		-> if_stmt | repeat_stmt SEMI | assign_stmt SEMI | decl_stmt SEMI| call_funct SEMI | return_stmt SEMI| write_stmt SEMI | read_stmt SEMI| for_stmt | ERROR
+if_stmt 	-> IF LPAREN exp RPAREN THEN stmt_seq END | IF LPAREN exp RPAREN THEN stmt_seq ELSE stmt_seq END
+repeat_stmt	-> REPEAT stmt_seq UNTIL exp
+assign_stmt	-> ID ASSIGN exp
+exp 		-> simple_exp AND simple_exp |
+				simple_exp OR simple_exp |
+				simple_exp LT simple_exp |
+				simple_exp GT simple_exp |
+				simple_exp LE simple_exp |
+				simple_exp GE simple_exp |
+				simple_exp EQ simple_exp | simple_exp
+
+
+simple_exp 	-> simple_exp PLUS term | simple_exp MINUS term | term
+term 		-> term TIMES factor | term OVER factor | factor 
+factor 		-> LPAREN exp RPAREN | DIGITO | ID | Vector | ERROR
+vector 		-> ID LCLASP exp RCLASP
+decl_stmt 	-> type var_list | type assign_stmt | type array
+
+type 		-> INT | BOOLEAN | VOID
+
+
+var_list	-> var_list COMMA factor | factor
+call_funct 	-> ID LPAREN param_list RPAREN
+param_list 	-> param_list COMMA param | param | EMPTY
+param 		-> DIGITO | bool | exp
+bool 		-> TRUE | FALSE
+decl_functs -> decl_functs decl_funct | decl_funct | EMPTY
+decl_funct  -> type ID LPAREN defpar_list RPAREN mainbody
+defpar_list -> defpar_list COMMA type ID | type ID | EMPTY
+return_stmt -> RETURN exp 
+write_stmt 	-> WRITE exp
+read_stmt 	-> READ ID
+for_stmt 	-> FOR LPAREN assign_stmt SEMI exp SEMI assign_stmt RPAREN stmt_seq END
+ 
+
