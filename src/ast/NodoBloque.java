@@ -9,6 +9,7 @@ public class NodoBloque extends NodoBase {
 		super();
 		this.declararfun = declararfun;
 		this.cuerpo = cuerpo;
+		System.out.println("messaje");
 	}
 	
 	public NodoBloque() {

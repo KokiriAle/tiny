@@ -27,7 +27,22 @@ public class Util {
 		    		|| raiz instanceof NodoValor
 		    		|| raiz instanceof NodoIdentificador )
 		    	imprimirNodo(raiz);
-		    else System.out.println("Tipo de nodo desconocido");;
+				
+		    else if(raiz instanceof NodoBloque)
+                    System.out.println("Bloque");
+            else if (raiz instanceof NodoBool) 	System.out.println("Bloque");
+			
+            else if (raiz instanceof NodoCall) 	System.out.println("LLamada de Funcion");
+
+            else if (raiz instanceof NodoDecFun) 	System.out.println("Declaración de Funcion");
+		    
+            else if (raiz instanceof NodoExpresion) 	System.out.println("Expresión");
+			
+			else if (raiz instanceof Nodolistparam) 	System.out.println("Lista de parametros");
+			 
+            else if (raiz instanceof NodoType) 	System.out.println("Tipo de nodo");
+			
+			else System.out.println("Tipo de nodo desconocido");;
 		    
 		    /* Hago el recorrido recursivo */
 		    if (raiz instanceof  NodoIf){

@@ -79,7 +79,7 @@ public class Generador {
 			System.out.println("BUG: Tipo de nodo a generar desconocido");
 		}
 		/*Si el hijo de extrema izquierda tiene hermano a la derecha lo genero tambien*/
-		if(nodo.TieneHermano())
+		if(nodo!= null && nodo.TieneHermano())
 			generar(nodo.getHermanoDerecha());
 	}else
 		System.out.println("¡¡¡ERROR: por favor fije la tabla de simbolos a usar antes de generar codigo objeto!!!");

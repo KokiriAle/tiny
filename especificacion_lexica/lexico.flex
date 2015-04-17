@@ -106,7 +106,7 @@ espacio		= [ \t]+
 			return sf.newSymbol("GE",sym.GE);
 			}
 "!="			{ 	if(debug) System.out.println("token DIFFERENT");
-			return sf.newSymbol("DIFERENTE",sym.DIFERENTE);
+			return sf.newSymbol("DIFERENTE",sym.DIFFERENT);
 			}
 "+"             {	if(debug) System.out.println("token PLUS");
 			return sf.newSymbol("PLUS",sym.PLUS);
@@ -124,7 +124,13 @@ espacio		= [ \t]+
 			return sf.newSymbol("AND",sym.AND);
 			}
 "or"        	{ if(debug) System.out.println("token OR");
-			return sf.newSymbol("OR",sym.OR);
+			return sf.newSymbol("OR",sym.OR);			
+			}
+"true"			{ if(debug) System.out.println("token TRUE");
+			return sf.newSymbol("TRUE",sym.TRUE);			
+			}
+"false"			{ if(debug) System.out.println("token FALSE");
+			return sf.newSymbol("FALSE",sym.FALSE);			
 			}
 "("             {	if(debug) System.out.println("token LPAREN");
 			return sf.newSymbol("LPAREN",sym.LPAREN);
