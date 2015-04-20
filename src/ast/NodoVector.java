@@ -3,18 +3,18 @@ package ast;
 public class NodoVector extends NodoBase {
 
 	private NodoBase identificador;
-	private NodoBase interno;
-	
-	public NodoVector(NodoBase identificador, NodoBase interno) {
+	private NodoBase indice;
+	private NodoValor indice2;
+	public NodoVector(NodoBase identificador, NodoBase indice) {
 		super();
 		this.identificador = identificador;
-		this.interno = interno;
+		this.indice = indice;
 	}
 	
-	public NodoVector() {
+	public NodoVector(NodoBase Identificador,int indice2) {
 		super();
 		this.identificador = null;
-		this.interno = null;	
+		this.indice2 = new NodoValor(indice2);	
 	}
 	
 	public NodoBase getIdentificador() {
@@ -24,13 +24,20 @@ public class NodoVector extends NodoBase {
 	public void setIdentificador(NodoBase identificador) {
 		this.identificador = identificador;
 	}
-	
-	public NodoBase getInterno() {
-		return interno;
+	public NodoBase getIndice() {
+		return indice;
 	}
 
-	public void setInterno(NodoBase interno) {
-		this.interno = interno;
+	public void setIndice(NodoBase indice) {
+		this.indice = indice;
+	}
+	
+	public NodoValor getIndice2() {
+		return indice2;
+	}
+
+	public void setIndice2(NodoValor indice2) {
+		this.indice2 = indice2;
 	}
 	
 

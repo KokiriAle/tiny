@@ -91,6 +91,7 @@ non terminal NodoBase for_stmt;
 non terminal NodoBase bool;
 
 
+
 /* Precedencia de operadores 
 precedence left BEGIN;
 precedence left LPAREN, RPAREN;
@@ -270,10 +271,11 @@ var_list    ::= var_list:lista COMMA factor:var {: System.out.println("\t Entro 
             :}
 			| factor:var {: System.out.println("\t Entró a var_list --> factor"); RESULT= var;  :};
 			
+			
 call_funct  ::=ID:ident LPAREN param_list:plist RPAREN {: System.out.println("\t Entró a call_funct --> ID LPAREN param_list RPAREN"); 
 RESULT = new NodoCall(ident.toString(), plist);
 
-       :};
+      :};
 
 param_list  ::= param_list:lista COMMA param:parametro {: System.out.println("\t Entró a param_list --> param_list COMMA param");
   
@@ -298,75 +300,110 @@ param       ::= bool:booleano {: System.out.println("\t Entró a param --> bool")
 bool        ::= TRUE {: System.out.println("\t Entró abool--> TRUE"); RESULT= new NodoBool(true); :}
 			| FALSE {: System.out.println("\t Entró abool--> FALSE"); RESULT= new NodoBool(false); :};
 			
+			
 exp        ::= exp:exIz OR simple_exp1:exDr {:
                   RESULT = new NodoExpresion(exIz, exDr); 
               :}
-			| simple_exp1:euno {: RESULT = euno; :};
+			| simple_exp1:euno {: RESULT = euno; :}
+			| LPAREN exp:exp RPAREN
+					{:
+						RESULT = exp;  
+					:};
 
-simple_exp1 ::= simple_exp1:exIz AND simple_exp2:exDo {: 
-RESULT = new NodoExpresion(exIz, exDo); 
-             
-            :}
+
+
+simple_exp1 ::= simple_exp1:exIz AND simple_exp2:exDo 
+				{: 
+					RESULT = new NodoExpresion(exIz, exDo);              
+            	:}
 			| simple_exp2:exD {: RESULT= exD; :};
 			
-simple_exp2 ::= simple_exp2:exI EQ simple_exp3:exD	{: if(modoDepuracion) System.out.println("\t regla 9b"); 
-							RESULT = new NodoOperacion(exI,tipoOp.igual,exD); :}
+			
+			
+simple_exp2 ::= simple_exp2:exI EQ simple_exp3:exD	
+				{: 
+					if(modoDepuracion) System.out.println("\t regla 9b"); 
+					RESULT = new NodoOperacion(exI,tipoOp.igual,exD);
+				:}
+				
 			| simple_exp3:etr {:RESULT= etr; :};
 
-simple_exp3 ::= simple_exp3:etres ASSIGN simple_exp4:ecu {:
-              RESULT = new NodoExpresion(etres, ecu); 
-             
-             :}
+simple_exp3 ::= simple_exp3:etres ASSIGN simple_exp4:ecu 
+			{:
+              RESULT = new NodoExpresion(etres, ecu);              
+            :}
 			| simple_exp4:excu {: RESULT = excu; :};
 			
-simple_exp4  ::= simple_exp:exI LT simple_exp:exD	{: if(modoDepuracion) System.out.println("\t regla 9a"); 
-								RESULT = new NodoOperacion(exI,tipoOp.menor,exD);
-								:} 
-		| simple_exp:exIz GT simple_exp:exDe	{: if(modoDepuracion) System.out.println("\t regla 9a"); 
-								RESULT = new NodoOperacion(exIz,tipoOp.mayor,exDe);
-								:}
-		| simple_exp:exIz LE simple_exp:exDe	{: if(modoDepuracion) System.out.println("\t regla 9a"); 
-								RESULT = new NodoOperacion(exIz,tipoOp.menorIg,exDe);
-								:}
-		| simple_exp:exIz GE simple_exp:exDe	{: if(modoDepuracion) System.out.println("\t regla 9a"); 
-								RESULT = new NodoOperacion(exIz,tipoOp.mayorIg,exDe);
-								:}
-		| simple_exp:ex	{: if(modoDepuracion) System.out.println("\t regla 9c"); 
-					RESULT = ex;
+			
+			
+simple_exp4  ::= simple_exp:exI LT simple_exp:exD	
+					{: 	
+						if(modoDepuracion) System.out.println("\t regla 9a"); 
+						RESULT = new NodoOperacion(exI,tipoOp.menor,exD);
+					:}
+					 
+		| simple_exp:exIz GT simple_exp:exDe	
+					{: 
+						if(modoDepuracion) System.out.println("\t regla 9a"); 
+						RESULT = new NodoOperacion(exIz,tipoOp.mayor,exDe);
+					:}
+					
+		| simple_exp:exIz LE simple_exp:exDe	
+					{: 
+						if(modoDepuracion) System.out.println("\t regla 9a"); 
+						RESULT = new NodoOperacion(exIz,tipoOp.menorIg,exDe);
+					:}
+		| simple_exp:exIz GE simple_exp:exDe	
+					{: 
+						if(modoDepuracion) System.out.println("\t regla 9a"); 
+						RESULT = new NodoOperacion(exIz,tipoOp.mayorIg,exDe);
+					:}
+		| simple_exp:ex	
+					{:
+						if(modoDepuracion) System.out.println("\t regla 9c"); 
+						RESULT = ex;
 					:};	
 
-simple_exp  ::= simple_exp:exI PLUS term:exD	{: if(modoDepuracion) System.out.println("\t Entro a simple_exp --> simple_exp PLUS simple_exp"); 
-							RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
-							:}
-		| simple_exp:exI MINUS term:exD	{: if(modoDepuracion) System.out.println("\t Entro a simple_exp --> simple_exp MINUS simple_exp"); 
-							RESULT = new NodoOperacion(exI,tipoOp.menos,exD);
+simple_exp  ::= simple_exp:exI PLUS term:exD	
+					{: 
+						if(modoDepuracion) System.out.println("\t Entro a simple_exp --> simple_exp PLUS simple_exp"); 
+						RESULT = new NodoOperacion(exI,tipoOp.mas,exD);
+					:}
+		| simple_exp:exI MINUS term:exD	
+					{:
+						 if(modoDepuracion) System.out.println("\t Entro a simple_exp --> simple_exp MINUS simple_exp"); 
+						 RESULT = new NodoOperacion(exI,tipoOp.menos,exD);
 							:}
 		| term:ex	{: if(modoDepuracion) System.out.println("\t Entro a simple_exp --> term"); 
 				RESULT=ex;
 				:};
 
-term        ::= term:exI TIMES factor:exD	{: if(modoDepuracion) System.out.println("\t Entro a term --> term TIMES factor"); 
-							RESULT = new NodoOperacion(exI,tipoOp.por,exD);
-							:}
-		| term:exI OVER factor:exD	{: if(modoDepuracion) System.out.println("\t Entro a term --> term OVER factor"); 
+term        ::= term:exI TIMES factor:exD	
+					{: 
+						if(modoDepuracion) System.out.println("\t Entro a term --> term TIMES factor"); 
+						RESULT = new NodoOperacion(exI,tipoOp.por,exD);
+					:}
+		| term:exI OVER factor:exD
+					{: 
+						if(modoDepuracion) System.out.println("\t Entro a term --> term OVER factor"); 
 						RESULT = new NodoOperacion(exI,tipoOp.entre,exD);
-						:}
-		| factor:ex	{: if(modoDepuracion) System.out.println("\t Entro a term --> factor"); 
-					RESULT=ex;
+					:}
+		| factor:ex	
+					{: 
+						if(modoDepuracion) System.out.println("\t Entro a term --> factor"); 
+						RESULT=ex;
 					:};
 
-factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\t Entro a factor --> LPAREN exp RPAREN"); 
-							RESULT = ex;
-							:}
-		| NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a factor --> NUM"); 
+factor      ::= NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a number --> NUM"); 
 					System.out.println("Devolvi nodo numero entero");
 					if(valor!=null){
 						RESULT= new NodoValor(valor);					
 					}else{
 						RESULT = null;
 						System.out.println("Ocurrio error en cup # 0005");
-					}
-					:}
+					}				
+				:}
+		
 		| ID:variable	{: if(modoDepuracion) System.out.println("\t Entro a factor --> ID"); 
 					if(variable!=null){
 						System.out.println("Construyendo Nodo ID para Lexema: "+ variable.toString());
@@ -376,10 +413,17 @@ factor      ::= LPAREN exp:ex RPAREN	{: if(modoDepuracion) System.out.println("\
 						System.out.println("Ocurrio error en cup # 0005");
 					}
 					:}
+	
+		
+					
 		| error	{: if(modoDepuracion) System.out.println("\t Entro a factor --> error"); 
 				System.out.println("Ocurrio error en cup # 0003");
 				RESULT=null;
 				:};
+				
+
+
+
 
 return_stmt  ::= RETURN exp:expres {: System.out.println("\t Entró a return_stmt --> RETURN exp");   :};
 
