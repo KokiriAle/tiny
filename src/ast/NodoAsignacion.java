@@ -3,6 +3,7 @@ package ast;
 public class NodoAsignacion extends NodoBase {
 	//private String identificador;
 	private NodoBase expresion;
+	private NodoBase expresion2;
 	private NodoType identificador;
 	
 	public NodoAsignacion(NodoType identificador) {
@@ -16,6 +17,13 @@ public class NodoAsignacion extends NodoBase {
 		
 		this.identificador = new NodoType(var);
 		this.expresion = expresion;
+	}
+	
+	public NodoAsignacion(NodoBase var, NodoBase expresion) {
+		super();
+		
+		this.expresion = var;
+		this.expresion2 = expresion;
 	}
 
 	

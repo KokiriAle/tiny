@@ -210,11 +210,20 @@ repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(modoDepuracion) Sy
 							RESULT = new NodoRepeat(cuerpo,prueba);
 							:};
 
-assign_stmt ::= ID:variable ASSIGN exp:ex	
-				{: :}
-
+assign_stmt ::= ID:variable 	{: if(modoDepuracion) System.out.println("\t regla 6 parte del medio"); 
+				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
+				String nombre = variable.getName();*/
+				:}
+				ASSIGN exp:ex	{: if(modoDepuracion) System.out.println("\t regla 6 parte final");
+					if(variable!=null)
+					RESULT = new NodoAsignacion(variable.toString(),ex);
+					else{
+					RESULT = null;
+					System.out.println("Ocurrio error en cup # 0001");
+					}
+					:}
 				|vector:vec ASSIGN exp:ex	
-				{: :}
+				{: RESULT = new NodoAsignacion(vec,ex);  :}
 				;
 
 read_stmt   ::= READ factor:variable	{: 
@@ -243,10 +252,10 @@ type 		::=
 					:};
 			
 var_list    ::= 
-				factor:fac COMMA var_list:lista {: :}			
-				| factor:fac LCLASP NUM RCLASP COMMA var_list:lista {: :}
-				| factor:fac LCLASP NUM RCLASP {: :}
-				| factor:fac{: :};
+				ID:id COMMA var_list:lista {: :}			
+				| ID:id LCLASP NUM RCLASP COMMA var_list:lista {: :}
+				| ID:id LCLASP NUM RCLASP {: :}
+				| ID:id {: :};
 				
 				
 call_funct  ::=
@@ -395,26 +404,30 @@ factor      ::= NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a n
 						RESULT= vec;							
 					:}
 
-		| TRUE:tru	
-					{: 	:}
+		| TRUE:tru	{:RESULT= new NodoBool(true); 	:}
 		| FALSE:fal	
-					{: 	:}				
+					{: RESULT= new NodoBool(false);	:}				
 					
 		| error		{:  if(modoDepuracion) System.out.println("\t Entro a factor --> error"); 
 						System.out.println("Ocurrio error en cup # 0003");
 						RESULT=null;	
 					:};
 			
-		vector       ::= ID:iden LCLASP exp:ex RCLASP
-				{:
-				 	if(modoDepuracion) System.out.println("\t Entro a vector --> id [indice]"); 
-					RESULT = new NodoVector(iden, ex);
+		vector   ::= ID:iden LCLASP exp:ex RCLASP {:
+			 	if(modoDepuracion) System.out.println("\t Entro a vector --> id [indice]"); 
+			     	RESULT = new NodoVector(new NodoIdentificador(iden.toString()), ex);
 				:}
 
 		;
 
 
 
-return_stmt  ::= RETURN exp:expres {: System.out.println("\t Entró a return_stmt --> RETURN exp");   :};
+return_stmt  ::= RETURN exp:expres {: System.out.println("\t Entró a return_stmt --> RETURN exp");
+        RESULT = expres;
+   :};
 
-for_stmt     ::= FOR LPAREN assign_stmt:asig SEMI exp:express SEMI assign_stmt:asigna RPAREN stmt_seq:sent END {: System.out.println("\t Entró a for_stmt --> FOR LPAREN assign_stmt SEMI exp assign_stmt RPAREN stmt_seq END");   :};
+for_stmt     ::= FOR LPAREN assign_stmt:asig SEMI exp:express SEMI assign_stmt:asigna RPAREN stmt_seq:sent END {: System.out.println("\t Entró a for_stmt --> FOR LPAREN assign_stmt SEMI exp assign_stmt RPAREN stmt_seq END");
+
+   RESULT= new NodoFor(asig,express,asigna,sent);
+
+   :};
