@@ -5,6 +5,8 @@ public class NodoVector extends NodoBase {
 	private NodoBase identificador;
 	private NodoBase indice;
 	private NodoValor indice2;
+	private int in;
+	
 	public NodoVector(NodoBase identificador, NodoBase indice) {
 		super();
 		this.identificador = identificador;
@@ -14,7 +16,8 @@ public class NodoVector extends NodoBase {
 	public NodoVector(NodoBase Identificador,int indice2) {
 		super();
 		this.identificador = null;
-		this.indice2 = new NodoValor(indice2);	
+		//this.indice2 = new NodoValor(indice2);
+		in=indice2;
 	}
 	
 	public NodoBase getIdentificador() {

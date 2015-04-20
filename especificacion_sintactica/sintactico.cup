@@ -155,7 +155,7 @@ mainbody    ::= BEGIN stmt_seq:secu END  {: System.out.println("\t Entró a mainb
                 RESULT =secu;
               :};	
 
-stmt_seq    ::=  stmt_seq:ini SEMI stmt:sent	{: if(modoDepuracion) System.out.println("\t entro a stmt_seq --> stmt_seq SEMI stmt"); 
+stmt_seq    ::=  stmt:sent SEMI stmt_seq:ini	{: if(modoDepuracion) System.out.println("\t entro a stmt_seq --> stmt_seq SEMI stmt"); 
 						NodoBase hijoActual = ini;
 						if(hijoActual !=null){
 							while(hijoActual.TieneHermano()){
@@ -210,72 +210,51 @@ repeat_stmt ::= REPEAT stmt_seq:cuerpo UNTIL exp:prueba	{: if(modoDepuracion) Sy
 							RESULT = new NodoRepeat(cuerpo,prueba);
 							:};
 
-assign_stmt ::= ID:variable 	{: if(modoDepuracion) System.out.println("\t regla 6 parte del medio"); 
-				/*lineanum=1000; //Pasar/Obtener la linea correcta por el Simbolo
-				String nombre = variable.getName();*/
-				:}
-			ASSIGN exp:ex	{: if(modoDepuracion) System.out.println("\t regla 6 parte final");
-					if(variable!=null)
-					RESULT = new NodoAsignacion(variable.toString(),ex);
-					else{
-					RESULT = null;
-					System.out.println("Ocurrio error en cup # 0001");
-					}
+assign_stmt ::= ID:variable ASSIGN exp:ex	
+				{: :}
+
+				|vector:vec ASSIGN exp:ex	
+				{: :}
+				;
+
+read_stmt   ::= READ factor:variable	{: 
 					:};
 
-read_stmt   ::= READ ID:variable	{: if(modoDepuracion) System.out.println("\t Entro a read_stmt --> READ ID"); 
-					System.out.println("Leyendo Variable");
-					if(variable!=null)
-					RESULT = new NodoLeer(variable.toString());
-					else{
-					RESULT = null;
-					System.out.println("Ocurrio error en cup # 0002");
-					}
+write_stmt  ::= WRITE exp:ex	
+					{:
+						if(modoDepuracion) System.out.println("\t Entro a write_stmt --> WRITE ID"); 
+						RESULT= new NodoEscribir(ex);
 					:};
 
-write_stmt  ::= WRITE exp:ex	{: if(modoDepuracion) System.out.println("\t Entro a write_stmt --> WRITE ID"); 
-					RESULT= new NodoEscribir(ex);
+decl_stmt   ::=
+				type:tipo var_list:lista 
+				{:
+					System.out.println("\t Entró a decl_stmt --> type val_list"); 
+                	RESULT = new NodoDecla(tipo.toString(), lista); 
+            	:};
+
+			
+type 		::= 
+				INT {:
+						System.out.println("\t Entró a type --> INT"); RESULT= new NodoType("INT");   :}
+						| BOOLEAN {: System.out.println("\t Entró a type --> BOOLEAN"); RESULT= new NodoType("BOOLEAN"); :}
+						| VOID {: System.out.println("\t Entró a type --> VOID"); RESULT= new NodoType("VOID"); 
+
 					:};
-
-decl_stmt   ::=type:tipo var_list:lista {: System.out.println("\t Entró a decl_stmt --> type val_list"); 
-                       RESULT = new NodoDecla(tipo.toString(), lista); 
-
-            :}
-            | type:tipo assign_stmt:astmt {: System.out.println("\t Entró a decl_stmt --> type assign_stmt"); 
-                      RESULT = new NodoAsignacion(tipo.toString(), astmt);
-			    
-			:}
-			| type:tipo vector:vec {: System.out.println("\t Entró a Entró a decl_stmt --> type vector"); 
-			      RESULT = new NodoAsignacion(tipo.toString(), vec);
-			         
-			:};
-
 			
-type 		::= INT {: System.out.println("\t Entró a type --> INT"); RESULT= new NodoType("INT");   :}
-			| BOOLEAN {: System.out.println("\t Entró a type --> BOOLEAN"); RESULT= new NodoType("BOOLEAN"); :}
-			| VOID {: System.out.println("\t Entró a type --> VOID"); RESULT= new NodoType("VOID");  :};
-			
-var_list    ::= var_list:lista COMMA factor:var {: System.out.println("\t Entro a var_list --> var_list COMMA factor"); 
-                        NodoBase hijoActual = lista;
-						if(hijoActual !=null){
-							while(hijoActual.TieneHermano()){
-								hijoActual = hijoActual.getHermanoDerecha();
-							}
-							hijoActual.setHermanoDerecha(var);
-							RESULT=lista;
-						}else{
-							RESULT=var;
-						}
-
- 
-            :}
-			| factor:var {: System.out.println("\t Entró a var_list --> factor"); RESULT= var;  :};
-			
-			
-call_funct  ::=ID:ident LPAREN param_list:plist RPAREN {: System.out.println("\t Entró a call_funct --> ID LPAREN param_list RPAREN"); 
-RESULT = new NodoCall(ident.toString(), plist);
-
-      :};
+var_list    ::= 
+				factor:fac COMMA var_list:lista {: :}			
+				| factor:fac LCLASP NUM RCLASP COMMA var_list:lista {: :}
+				| factor:fac LCLASP NUM RCLASP {: :}
+				| factor:fac{: :};
+				
+				
+call_funct  ::=
+				ID:ident LPAREN param_list:plist RPAREN 
+				{:  
+					System.out.println("\t Entró a call_funct --> ID LPAREN param_list RPAREN"); 
+					RESULT = new NodoCall(ident.toString(), plist);
+		        :};
 
 param_list  ::= param_list:lista COMMA param:parametro {: System.out.println("\t Entró a param_list --> param_list COMMA param");
   
@@ -294,21 +273,15 @@ param_list  ::= param_list:lista COMMA param:parametro {: System.out.println("\t
 			| param:parametro {: System.out.println("\t Entró a param_list --> param");  RESULT= parametro; :}
 			| EMPTY {: System.out.println("\t Entró a param_list --> EMPTY");   :};
 			
-param       ::= bool:booleano {: System.out.println("\t Entró a param --> bool"); RESULT=booleano;   :}
-			| exp:expres {: System.out.println("\t Entró a param --> exp");  RESULT =expres; :};
+param       ::= exp:expres {: System.out.println("\t Entró a param --> exp");  RESULT =expres; :};
 			
-bool        ::= TRUE {: System.out.println("\t Entró abool--> TRUE"); RESULT= new NodoBool(true); :}
-			| FALSE {: System.out.println("\t Entró abool--> FALSE"); RESULT= new NodoBool(false); :};
-			
+		
 			
 exp        ::= exp:exIz OR simple_exp1:exDr {:
                   RESULT = new NodoExpresion(exIz, exDr); 
               :}
 			| simple_exp1:euno {: RESULT = euno; :}
-			| LPAREN exp:exp RPAREN
-					{:
-						RESULT = exp;  
-					:};
+			;
 
 
 
@@ -373,10 +346,13 @@ simple_exp  ::= simple_exp:exI PLUS term:exD
 					{:
 						 if(modoDepuracion) System.out.println("\t Entro a simple_exp --> simple_exp MINUS simple_exp"); 
 						 RESULT = new NodoOperacion(exI,tipoOp.menos,exD);
-							:}
+					:}
+		
 		| term:ex	{: if(modoDepuracion) System.out.println("\t Entro a simple_exp --> term"); 
 				RESULT=ex;
-				:};
+				:}
+
+				;
 
 term        ::= term:exI TIMES factor:exD	
 					{: 
@@ -413,15 +389,29 @@ factor      ::= NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a n
 						System.out.println("Ocurrio error en cup # 0005");
 					}
 					:}
-	
-		
-					
-		| error	{: if(modoDepuracion) System.out.println("\t Entro a factor --> error"); 
-				System.out.println("Ocurrio error en cup # 0003");
-				RESULT=null;
-				:};
-				
+		| vector:vec	
+					{: 
+						if(modoDepuracion)   System.out.println("\t Entro a factor --> vector"); 					
+						RESULT= vec;							
+					:}
 
+		| TRUE:tru	
+					{: 	:}
+		| FALSE:fal	
+					{: 	:}				
+					
+		| error		{:  if(modoDepuracion) System.out.println("\t Entro a factor --> error"); 
+						System.out.println("Ocurrio error en cup # 0003");
+						RESULT=null;	
+					:};
+			
+		vector       ::= ID:iden LCLASP exp:ex RCLASP
+				{:
+				 	if(modoDepuracion) System.out.println("\t Entro a vector --> id [indice]"); 
+					RESULT = new NodoVector(iden, ex);
+				:}
+
+		;
 
 
 
