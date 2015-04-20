@@ -1,6 +1,5 @@
 package compilador;
-package ast;
-package lexer;
+
 
 import java_cup.runtime.*;
 import compilador.sym;
