@@ -89,6 +89,7 @@ non terminal NodoBase write_stmt;
 non terminal NodoBase read_stmt;
 non terminal NodoBase for_stmt;
 non terminal NodoBase bool;
+non terminal NodoBase numero;
 
 
 
@@ -379,7 +380,7 @@ term        ::= term:exI TIMES factor:exD
 						RESULT=ex;
 					:};
 
-factor      ::= NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a number --> NUM"); 
+factor      ::= numero:valor	{: if(modoDepuracion) System.out.println("\t Entro a number --> NUM"); 
 					System.out.println("Devolvi nodo numero entero");
 					if(valor!=null){
 						RESULT= new NodoValor(valor);					
@@ -420,7 +421,8 @@ factor      ::= NUM:valor	{: if(modoDepuracion) System.out.println("\t Entro a n
 
 		;
 
-
+numero ::= MINUS NUM:val {:  /*RESULT= new NodoValor((-1)*Integer.parseInt(val.toString()));*/  :}
+          | NUM:val	{:/* RESULT= new NodoValor(Integer.parseInt(val.toString()));  */:}  ;
 
 return_stmt  ::= RETURN exp:expres {: System.out.println("\t Entró a return_stmt --> RETURN exp");
         RESULT = expres;
