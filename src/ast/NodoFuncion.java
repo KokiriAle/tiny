@@ -5,6 +5,7 @@ public class NodoFuncion extends NodoBase {
 	private NodoBase part2;
 	private NodoType part3;
 	private String var;
+	private String ambito;
 	
 	public NodoFuncion (){
 		super();
